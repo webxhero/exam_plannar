@@ -4,8 +4,8 @@ A mobile-responsive study planner and to-do app designed to track BBS exam prepa
 
 ## How to Use
 
-1. Download or clone this repository.
-2. Open `bbs_cg4_mission_planner.html` in any modern web browser.
+1. Go to the link: https://exam-plannar.vercel.app/
+2. Open in any modern web browser.
 3. Select a date from the calendar to view daily tasks.
 4. Tick the checkbox when a task is completed.
 5. Use **Add Task** to create custom tasks.
@@ -21,3 +21,5 @@ A mobile-responsive study planner and to-do app designed to track BBS exam prepa
 - LocalStorage Data Saving
 
 No backend or installation is required.
+
+# Developed by CNL Shaahid
