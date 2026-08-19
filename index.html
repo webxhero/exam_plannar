@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <meta
+      name="description"
+      content="BBS CG-4 Mission Planner - Balanced BBS final exam study planner, calendar and task tracker."
+    />
+
+    <title>BBS CG-4 Mission Planner</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-shell">
+      <!-- ======================================================
+         SIDEBAR
+    ======================================================= -->
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <div class="brand-icon">4.0</div>
+
+            <div class="brand-copy">
+              <strong>BBS Mission</strong>
+              <span>Balanced CG-4 Planner</span>
+            </div>
+          </div>
+
+          <button
+            class="sidebar-close"
+            id="sidebarCloseBtn"
+            aria-label="Close menu"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="nav-title">Mission Control</div>
+
+        <ul class="nav-list">
+          <li>
+            <button class="nav-btn active" data-view="dashboard">
+              <span class="nav-icon">⌂</span>
+              <span>Today</span>
+            </button>
+          </li>
+
+          <li>
+            <button class="nav-btn" data-view="calendar">
+              <span class="nav-icon">▦</span>
+              <span>Calendar</span>
+            </button>
+          </li>
+
+          <li>
+            <button class="nav-btn" data-view="reports">
+              <span class="nav-icon">◒</span>
+              <span>Progress</span>
+            </button>
+          </li>
+
+          <li>
+            <button class="nav-btn" data-view="exams">
+              <span class="nav-icon">◆</span>
+              <span>Exam Timeline</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="mini-card">
+          <div class="mini-label">Current Strategy</div>
+
+          <div class="mini-value" id="sidebarPhaseName">Loading...</div>
+
+          <div class="mini-meta" id="sidebarPhaseMeta"></div>
+        </div>
+
+        <div class="mini-card">
+          <div class="mini-label">Next Exam</div>
+
+          <div class="mini-value" id="sidebarExamName">Loading...</div>
+
+          <div class="mini-meta" id="sidebarExamDays"></div>
+        </div>
+
+        <div class="sidebar-footer">
+          Gap day = revision day। কোনো paper যেন first exam-এর আগে zero না
+          থাকে—এই planner সেই logic-এ schedule তৈরি করে।
+        </div>
+      </aside>
+
+      <!-- ======================================================
+         MAIN
+    ======================================================= -->
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button
+              class="icon-btn mobile-menu"
+              id="mobileMenuBtn"
+              aria-label="Open menu"
+            >
+              ☰
+            </button>
+
+            <div>
+              <div class="eyebrow">BBS CG-4 Mission</div>
+
+              <div class="top-date" id="topDate"></div>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <button
+              class="icon-btn"
+              id="themeToggle"
+              title="Toggle theme"
+              aria-label="Toggle theme"
+            >
+              ◐
+            </button>
+
+            <button class="primary-btn" id="addTaskTopBtn">
+              ＋
+              <span class="btn-text"> Add Task </span>
+            </button>
+          </div>
+        </header>
+
+        <!-- ====================================================
+           DASHBOARD
+      ===================================================== -->
+
+        <section class="view active" id="dashboardView">
+          <div class="mission-hero">
+            <div class="hero-content">
+              <div>
+                <div class="hero-kicker">
+                  ● Balanced Mission • 20 Aug → 11 Oct
+                </div>
+
+                <h1>
+                  Mission:
+                  <span class="gradient-text"> CG-4 </span>
+                </h1>
+
+                <p class="hero-description">
+                  History প্রথম exam বলে priority বেশি পাবে, কিন্তু Accounting,
+                  Economics ও Management-এর ১ম এবং ২য়—সব paper 20 September-এর
+                  আগেই multiple study session পাবে। Exam gap-এ নতুন syllabus
+                  শেখার বদলে revision, question practice ও weak-area repair হবে।
+                </p>
+
+                <div class="hero-rule" id="heroRule">
+                  First exam gets priority — no paper stays at zero.
+                </div>
+              </div>
+
+              <div class="progress-ring" id="heroProgressRing">
+                <div class="ring-inner">
+                  <span class="ring-value" id="heroProgressValue"> 0% </span>
+
+                  <span class="ring-label"> Execution </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STATS -->
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label"> Today's Progress </span>
+
+                <span class="stat-icon"> ✓ </span>
+              </div>
+
+              <div class="stat-value" id="todayProgressStat">0%</div>
+
+              <div class="stat-meta" id="todayProgressMeta">0 of 0 tasks</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label"> Study Completed </span>
+
+                <span class="stat-icon"> ◫ </span>
+              </div>
+
+              <div class="stat-value" id="studyHoursStat">0h</div>
+
+              <div class="stat-meta" id="studyHoursMeta">
+                Today's study blocks
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label"> Next Exam </span>
+
+                <span class="stat-icon"> ◆ </span>
+              </div>
+
+              <div class="stat-value" id="daysLeftStat">—</div>
+
+              <div class="stat-meta" id="nextExamStat">Loading...</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label"> Mission Execution </span>
+
+                <span class="stat-icon"> ◉ </span>
+              </div>
+
+              <div class="stat-value" id="missionProgressStat">0%</div>
+
+              <div class="stat-meta">Scheduled tasks up to today</div>
+            </div>
+          </div>
+
+          <!-- CURRENT PHASE -->
+
+          <div class="panel phase-card">
+            <div class="phase-header-grid">
+              <div>
+                <div class="mini-label">Current Auto Strategy</div>
+
+                <div class="phase-name" id="phaseName">Loading...</div>
+
+                <div class="phase-description" id="phaseDescription"></div>
+              </div>
+
+              <div class="phase-overall">
+                <div class="phase-overall-top">
+                  <div>
+                    <span class="phase-overall-label"> Phase Execution </span>
+
+                    <strong id="phaseOverallPercent"> 0% </strong>
+                  </div>
+
+                  <span class="phase-overall-count" id="phaseOverallCount">
+                    0 / 0 sessions
+                  </span>
+                </div>
+
+                <div class="phase-main-progress">
+                  <div
+                    class="phase-main-progress-fill"
+                    id="phaseOverallFill"
+                    style="width: 0%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phase-subject-grid" id="phaseAllocation"></div>
+          </div>
+
+          <!-- DASHBOARD -->
+
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">Today's Exact Routine</div>
+
+                  <div class="panel-subtitle" id="todayTaskSubtitle"></div>
+                </div>
+
+                <button class="secondary-btn" id="openTodayCalendarBtn">
+                  Calendar
+                </button>
+              </div>
+
+              <div class="task-list" id="todayTaskList"></div>
+            </div>
+
+            <div class="side-stack">
+              <div class="panel focus-card">
+                <div class="focus-card-header">
+                  <div>
+                    <div class="panel-title">Focus Session</div>
+
+                    <div class="panel-subtitle">50 মিনিট deep work</div>
+                  </div>
+
+                  <div class="focus-mode">Focus</div>
+                </div>
+
+                <div class="focus-time" id="focusTime">50:00</div>
+
+                <div class="focus-sub">Phone দূরে • এক block • এক subject</div>
+
+                <div class="focus-actions">
+                  <button class="focus-start" id="focusStartBtn">
+                    Start Focus
+                  </button>
+
+                  <button class="focus-reset" id="focusResetBtn">↺</button>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <div>
+                    <div class="panel-title">Upcoming Exams</div>
+
+                    <div class="panel-subtitle">Official routine</div>
+                  </div>
+                </div>
+
+                <div class="upcoming-list" id="dashboardUpcomingExams"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+           CALENDAR
+      ===================================================== -->
+
+        <section class="view" id="calendarView">
+          <div class="page-heading">
+            <h1>Full Study Calendar</h1>
+
+            <p>
+              Study, Namaz, BNCC, Programming, Programming HW, WebXHero, English
+              এবং exam—সব date ও time অনুযায়ী automatically calendar-এ তৈরি করা
+              হয়েছে।
+            </p>
+          </div>
+
+          <div class="calendar-layout">
+            <div class="panel calendar-card">
+              <div class="calendar-toolbar">
+                <div>
+                  <div class="month-title" id="calendarMonthTitle"></div>
+
+                  <div class="panel-subtitle">
+                    Date select করলে full routine দেখাবে
+                  </div>
+                </div>
+
+                <div class="calendar-nav">
+                  <button id="previousMonthBtn">‹</button>
+
+                  <button id="calendarTodayBtn">●</button>
+
+                  <button id="nextMonthBtn">›</button>
+                </div>
+              </div>
+
+              <div class="weekday-grid">
+                <div class="weekday">রবি</div>
+                <div class="weekday">সোম</div>
+                <div class="weekday">মঙ্গল</div>
+                <div class="weekday">বুধ</div>
+                <div class="weekday">বৃহস্পতি</div>
+                <div class="weekday">শুক্র</div>
+                <div class="weekday">শনি</div>
+              </div>
+
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+
+            <div class="panel">
+              <div class="day-detail-header">
+                <div class="selected-date-title" id="selectedDateTitle"></div>
+
+                <div class="selected-date-meta" id="selectedDateMeta"></div>
+
+                <div class="day-stat-row">
+                  <div class="day-stat">
+                    <strong id="selectedDayProgress"> 0% </strong>
+                    <span>Complete</span>
+                  </div>
+
+                  <div class="day-stat">
+                    <strong id="selectedDayStudy"> 0h </strong>
+                    <span>Study Done</span>
+                  </div>
+
+                  <div class="day-stat">
+                    <strong id="selectedDayTasks"> 0 </strong>
+                    <span>Tasks</span>
+                  </div>
+                </div>
+
+                <div class="day-detail-actions">
+                  <button class="primary-btn" id="addTaskDayBtn">＋ Add</button>
+
+                  <button class="secondary-btn" id="completeAllDayBtn">
+                    Complete All
+                  </button>
+                </div>
+              </div>
+
+              <div class="task-list" id="selectedDayTaskList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+           REPORTS
+      ===================================================== -->
+
+        <section class="view" id="reportsView">
+          <div class="page-heading">
+            <h1>Progress Report</h1>
+
+            <p>
+              কোন subject কতবার planned হয়েছে, তুমি কতটা execute করেছ এবং first
+              exam-এর আগে আমাদের target readiness কী—সব এখানে থাকবে।
+            </p>
+          </div>
+
+          <div class="reports-grid">
+            <div class="panel report-card">
+              <div class="panel-title">Subject Preparation</div>
+
+              <div class="panel-subtitle">
+                Completed study sessions / planned sessions
+              </div>
+
+              <div class="subject-progress-list" id="subjectProgressList"></div>
+            </div>
+
+            <div class="panel report-card">
+              <div class="panel-title">Last 7 Days</div>
+
+              <div class="panel-subtitle">Daily task execution</div>
+
+              <div class="week-chart" id="weekChart"></div>
+            </div>
+
+            <div class="panel report-card">
+              <div class="panel-title">Target Readiness Before 20 Sep</div>
+
+              <div class="panel-subtitle">
+                প্রথম exam-এর আগেই সব paper-এর base তৈরি করার target
+              </div>
+
+              <div class="target-grid" id="readinessTargetGrid"></div>
+            </div>
+
+            <div class="panel report-card">
+              <div class="panel-title">Mission Summary</div>
+
+              <div class="report-summary">
+                <div class="report-mini-stat">
+                  <strong id="reportTotalTasks"> 0 </strong>
+                  <span>Total Tasks</span>
+                </div>
+
+                <div class="report-mini-stat">
+                  <strong id="reportCompletedTasks"> 0 </strong>
+                  <span>Completed</span>
+                </div>
+
+                <div class="report-mini-stat">
+                  <strong id="reportStudyHours"> 0h </strong>
+                  <span>Study Done</span>
+                </div>
+              </div>
+
+              <div
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                  margin-top: 18px;
+                "
+              >
+                <button class="secondary-btn" id="exportDataBtn">
+                  Export Backup
+                </button>
+
+                <button class="secondary-btn" id="importDataBtn">Import</button>
+
+                <button class="danger-btn" id="resetPlannerBtn">
+                  Reset Planner
+                </button>
+              </div>
+
+              <input
+                type="file"
+                id="importFileInput"
+                accept=".json,application/json"
+                class="hidden"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================
+           EXAMS
+      ===================================================== -->
+
+        <section class="view" id="examsView">
+          <div class="page-heading">
+            <h1>Official Exam Timeline</h1>
+
+            <p>
+              পরীক্ষা শুরু দুপুর ১:০০টা। Planner-এর study weight এই exam
+              sequence অনুযায়ী automatically পরিবর্তিত হয়।
+            </p>
+          </div>
+
+          <div class="exam-timeline" id="examTimeline"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ========================================================
+       TASK MODAL
+  ========================================================= -->
+
+    <div class="modal-backdrop" id="taskModalBackdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <div class="modal-title" id="taskModalTitle">Add Task</div>
+
+          <button class="modal-close" id="taskModalClose">×</button>
+        </div>
+
+        <form id="taskForm">
+          <div class="modal-body">
+            <input type="hidden" id="taskId" />
+
+            <div class="form-grid">
+              <div class="form-group full">
+                <label for="taskTitle"> Task Title </label>
+
+                <input
+                  class="form-control"
+                  id="taskTitle"
+                  type="text"
+                  required
+                  maxlength="140"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="taskDate"> Date </label>
+
+                <input
+                  class="form-control"
+                  id="taskDate"
+                  type="date"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="taskCategory"> Category </label>
+
+                <select class="form-control" id="taskCategory">
+                  <option value="Study">Study</option>
+                  <option value="Namaz">Namaz</option>
+                  <option value="Programming">Programming</option>
+                  <option value="BNCC">BNCC</option>
+                  <option value="WebXHero">WebXHero</option>
+                  <option value="English">English</option>
+                  <option value="Personal">Personal</option>
+                  <option value="Exam">Exam</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="taskStart"> Start </label>
+
+                <input
+                  class="form-control"
+                  id="taskStart"
+                  type="time"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="taskEnd"> End </label>
+
+                <input class="form-control" id="taskEnd" type="time" />
+              </div>
+
+              <div class="form-group">
+                <label for="taskSubject"> Subject </label>
+
+                <select class="form-control" id="taskSubject">
+                  <option value="">Not Applicable</option>
+
+                  <option value="history">
+                    স্বাধীন বাংলাদেশের অভ্যুদয়ের ইতিহাস
+                  </option>
+
+                  <option value="acc1">হিসাববিজ্ঞান ১ম পত্র</option>
+
+                  <option value="econ1">অর্থনীতি ১ম পত্র</option>
+
+                  <option value="mgmt1">ব্যবস্থাপনা ১ম পত্র</option>
+
+                  <option value="acc2">হিসাববিজ্ঞান ২য় পত্র</option>
+
+                  <option value="econ2">অর্থনীতি ২য় পত্র</option>
+
+                  <option value="mgmt2">ব্যবস্থাপনা ২য় পত্র</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="taskPriority"> Priority </label>
+
+                <select class="form-control" id="taskPriority">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high" selected>High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+
+              <div class="form-group full">
+                <label for="taskNotes"> Task Details </label>
+
+                <textarea class="form-control" id="taskNotes"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="secondary-btn" id="taskCancelBtn">
+              Cancel
+            </button>
+
+            <button type="submit" class="primary-btn">Save Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
